@@ -62,11 +62,11 @@ jobs:
           directory: dist
           
       - name: Homepage from HTML
-        run: wkhtmltopdf http://localhost:8080 home.pdf
+        run: wkhtmltopdf http://localhost:8080/index.html home.pdf
       
         
       - name: Get PDF from HTML
-        run: wkhtmltopdf http://localhost:8080/hu/nyomtathato/ hu.pdf
+        run: wkhtmltopdf http://localhost:8080/hu/nyomtathato/index.html hu.pdf
         
       - name: Commit files
         id: commit
