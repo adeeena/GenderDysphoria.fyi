@@ -26,7 +26,13 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install necessary packages
-        run: sudo apt-get install chrome graphicsmagick -y
+        run: sudo apt-get install graphicsmagick -y
+        
+      - name: Get Chrome
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install ./google-chrome-stable_current_amd64.deb
+        
 
       - name: Checkout
         uses: actions/checkout@v3.0.0
@@ -62,11 +68,11 @@ jobs:
           directory: dist
           
       - name: Homepage from HTML
-        run: chrome --headless --print-to-pdf="home.pdf" http://localhost:8080/index.html
+        run: google-chrome --headless --print-to-pdf="home.pdf" http://localhost:8080/index.html
       
         
       - name: Get PDF from HTML
-        run: chrome --headless --print-to-pdf="hu.pdf" http://localhost:8080/hu/nyomtathato/index.html
+        run: google-chrome --headless --print-to-pdf="hu.pdf" http://localhost:8080/hu/nyomtathato/index.html
         
       - name: Commit files
         id: commit
