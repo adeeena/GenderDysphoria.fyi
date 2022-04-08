@@ -68,7 +68,7 @@ jobs:
       - name: Get PDF from HTML
         run: |
           wkhtmltopdf http://localhost:8080/hu/nyomtathato/index.html hu.pdf
-          -l --disable-smart-shrinking --dpi 96
+          --disable-smart-shrinking --dpi 96
           -B 20mm -T 20mm -L 20mm -R 20mm
         
       - name: Commit files
