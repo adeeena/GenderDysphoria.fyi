@@ -66,13 +66,9 @@ jobs:
         uses: Eun/http-server-action@v1.0.3
         with:
           directory: dist
-          
-      - name: Homepage from HTML
-        run: google-chrome --headless --print-to-pdf="home.pdf" http://localhost:8080/index.html
       
-        
       - name: Get PDF from HTML
-        run: google-chrome --headless --print-to-pdf="hu.pdf" http://localhost:8080/hu/nyomtathato/index.html
+        run: google-chrome --headless --print-to-pdf-no-header --run-all-compositor-stages-before-draw --print-to-pdf="hu.pdf" http://localhost:8080/hu/nyomtathato/index.html
         
       - name: Commit files
         id: commit
