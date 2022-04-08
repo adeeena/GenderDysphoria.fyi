@@ -59,7 +59,7 @@ jobs:
       - name: Launch HTTP Server
         uses: Eun/http-server-action@v1.0.3
         with:
-          directory: dest
+          directory: /home/runner/work/GenderDysphoria.fyi/GenderDysphoria.fyi/dist
           
       - name: Get PDF from HTML
         run: wkhtmltopdf http://localhost:8080/hu/nyomtathato/ hu.pdf
