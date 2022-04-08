@@ -83,7 +83,8 @@ jobs:
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          repository: adeeena-pdf
+          repository: adeeena/GenderDysphoria.fyi
+          branch: adeeena-pdf
         
         
       
