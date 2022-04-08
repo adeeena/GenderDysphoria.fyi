@@ -59,8 +59,12 @@ jobs:
       - name: Launch HTTP Server
         uses: Eun/http-server-action@v1.0.3
         with:
-          directory: /home/runner/work/GenderDysphoria.fyi/GenderDysphoria.fyi/dist
+          directory: dist
           
+      - name: Homepage from HTML
+        run: wkhtmltopdf http://localhost:8080 home.pdf
+      
+        
       - name: Get PDF from HTML
         run: wkhtmltopdf http://localhost:8080/hu/nyomtathato/ hu.pdf
         
@@ -69,8 +73,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          git add hu.pdf
-          
+          git add --all
           if [-z "$(git status --porcelain)"]; then
              echo "::set-output name=push::false"
           else
@@ -86,13 +89,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repository: adeeena/GenderDysphoria.fyi
           branch: adeeena-pdf
-          force: true
-        
-        
-      
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
