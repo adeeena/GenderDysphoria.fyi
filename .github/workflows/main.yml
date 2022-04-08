@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install necessary packages
-        run: sudo apt-get install wkhtmltopdf graphicsmagick -y
+        run: sudo apt-get install chrome graphicsmagick -y
 
       - name: Checkout
         uses: actions/checkout@v3.0.0
@@ -62,12 +62,11 @@ jobs:
           directory: dist
           
       - name: Homepage from HTML
-        run: wkhtmltopdf http://localhost:8080/index.html home.pdf
+        run: chrome --headless --print-to-pdf="home.pdf" http://localhost:8080/index.html
       
         
       - name: Get PDF from HTML
-        run: |
-          wkhtmltopdf -l --disable-smart-shrinking --dpi 96 -B 20mm -T 20mm -L 20mm -R 20mm http://localhost:8080/hu/nyomtathato/index.html hu.pdf 
+        run: chrome --headless --print-to-pdf="hu.pdf" http://localhost:8080/hu/nyomtathato/index.html
         
       - name: Commit files
         id: commit
