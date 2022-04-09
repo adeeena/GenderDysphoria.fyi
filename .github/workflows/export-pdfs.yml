@@ -1,0 +1,122 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Export PDFs
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Install necessary packages
+        run: sudo apt-get install graphicsmagick -y
+        
+      - name: Get Chrome
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install ./google-chrome-stable_current_amd64.deb
+        
+
+      - name: Checkout
+        uses: actions/checkout@v3.0.0
+        
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+      - name: Restore node_modules cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules
+      - name: Restore Asset Caches
+        uses: actions/cache@v2
+        with:
+          key: if-cache
+          path: |
+            ./if-cache
+            ./if-cache.json
+            ./twitter-cache.json
+      - run: npm i
+        
+      - name: Run build
+        run: npm run build
+        
+      - name: Launch HTTP Server
+        uses: Eun/http-server-action@v1.0.3
+        with:
+          directory: dist
+
+      - name: (EN) Get PDF from HTML
+        run: |
+          google-chrome --headless --print-to-pdf-no-header \
+          --run-all-compositor-stages-before-draw --print-to-pdf="public/gdb-en.pdf" \
+          http://localhost:8080/en/printable/index.html
+          
+      - name: (CN) Get PDF from HTML
+        run: |
+          google-chrome --headless --print-to-pdf-no-header \
+          --run-all-compositor-stages-before-draw --print-to-pdf="public/gdb-cn.pdf" \
+          http://localhost:8080/zh/printable/index.html
+          
+      - name: (DE) Get PDF from HTML
+        run: |
+          google-chrome --headless --print-to-pdf-no-header \
+          --run-all-compositor-stages-before-draw --print-to-pdf="public/gdb-de.pdf" \
+          http://localhost:8080/de/druckbar/index.html
+
+      - name: (HU) Get PDF from HTML
+        run: |
+          google-chrome --headless --print-to-pdf-no-header \
+          --run-all-compositor-stages-before-draw --print-to-pdf="public/gdb-hu.pdf" \
+          http://localhost:8080/hu/nyomtathato/index.html
+          
+      - name: (PL) Get PDF from HTML
+        run: |
+          google-chrome --headless --print-to-pdf-no-header \
+          --run-all-compositor-stages-before-draw --print-to-pdf="public/gdb-pl.pdf" \
+          http://localhost:8080/pl/do-druku/index.html
+        
+#      - name: (FR) Get PDF from HTML
+#        run: |
+#          google-chrome --headless --print-to-pdf-no-header \
+#          --run-all-compositor-stages-before-draw --print-to-pdf="public\gdb-fr.pdf" \
+#          http://localhost:8080/fr/a-imprimer/index.html
+        
+      - name: Commit files
+        id: commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "github-actions"
+          cd public
+          git add -A *.pdf
+          git commit -m "Adding exported PDFs"
+        shell: bash
+        
+      - name: GitHub Push
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: adeeena/GenderDysphoria.fyi
+          branch: adeeena-pdf
+          force: true
