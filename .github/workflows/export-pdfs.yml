@@ -109,8 +109,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
           cd public
-          ls -la
           git add -A *.pdf
+          git commit -m "Adding exported PDFs"
         shell: bash
         
       - name: GitHub Push
