@@ -108,12 +108,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          git add public/gdn-en.pdf
-          git add public/gdn-de.pdf
-          git add public/gdn-cn.pdf
-          git add public/gdn-hu.pdf
-          git add public/gdn-pl.pdf
-#          git add public/gdn-fr.pdf
+          git add --all
         shell: bash
         
       - name: GitHub Push
