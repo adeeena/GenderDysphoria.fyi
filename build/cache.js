@@ -7,6 +7,7 @@ const { resolve, readFile } = require('./resolve');
 const { hasOwn, isFunction } = require('./lib/util');
 const revHash = require('rev-hash');
 const revPath = require('rev-path');
+const log = require('fancy-log');
 
 const CACHE = 'if-cache';
 const MANIFEST = 'if-cache.json';
@@ -14,19 +15,19 @@ const REV_MANIFEST = 'rev-manifest.json';
 
 module.exports = exports = class Manifest {
 
-  constructor ({ time = true, inputRev = true, prod = false, writeCount = 100, writeInterval = 10000 }) {
-    this.compareBy = { time, inputRev };
+  constructor ({ /* time = true, */ inputRev = true, prod = false, writeCount = 100, writeInterval = 10000 }) {
+    this.compareBy = { inputRev };
     this.manifest = {};
     this.rev = memoizeSync(revHash);
     this.stat = memoizeAsync((f) =>
       fs.stat(resolve(f))
         .catch(() => null)
-        .then((stats) => (stats && Math.floor(stats.mtimeMs / 1000))),
+        .then((stats) => (stats && Math.floor(stats.mtimeMs / 1000)))
     );
     this.revFile = memoizeAsync((f) =>
       readFile(f)
         .then(revHash)
-        .catch(() => null),
+        .catch(() => null)
     );
 
     this.isProd = prod;
@@ -71,6 +72,15 @@ module.exports = exports = class Manifest {
   }
 
   async get (task) {
+    if (task === undefined || task === null) {
+      log.error(task);
+      throw new Error('Task action is undefined or null.');
+    }
+    if (task.input === undefined || task.input === null) {
+      log.error(task);
+      throw new Error('Task action is missing input. (tip: remove `twitter-cache.json` and run `gulp` again)');
+    }
+
     const hash = this.hash(task);
     const { input, output, cache: altCachePath } = task;
     const ext = path.extname(task.output);
@@ -254,7 +264,7 @@ module.exports = exports = class Manifest {
 
 
   async save () {
-    const revManifest = this.isProd && await fs.readJson(resolve(REV_MANIFEST))
+    const revManifest = false && this.isProd && await fs.readJson(resolve(REV_MANIFEST))
       .catch(() => ({}))
       .then((old) => ({ ...old, ...this.revManifest }));
 
